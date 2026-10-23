@@ -1,0 +1,230 @@
+% Compile: pdflatex poster_full_v3.tex   (needs preamble.tex, logos/, qrs/ and screenshot/ next to it)
+% v3 of poster_full.tex: key-findings band under the title, finding-led figure captions,
+% shorter intro text, claims toned down to what the data shows.
+
+\documentclass[25pt, a0paper, portrait, margin=0mm, innermargin=22mm,
+  blockverticalspace=4mm, colspace=18mm, subcolspace=10mm]{tikzposter}
+\input{preamble}
+
+% two app screenshots fanned next to the title, like the phone on terrapino.com
+\renewcommand{\headtextfrac}{0.79}
+\renewcommand{\authorbreak}{\\}
+\renewcommand{\headerphones}{%
+  % games phone behind, home phone in front; right edge 24 mm from the page edge
+  \drawphone{\titleposright-150mm}{\titlepostop-\brandbar-148mm}{140mm}{screenshot/terrapino_games.jpg}{0 0 0 0}
+  \drawphone{\titleposright-96mm}{\titlepostop-\brandbar-168mm}{140mm}{screenshot/terrapino_main.jpg}{0 0 0 0}}
+\newcommand{\bodylarge}{%
+  \fontsize{28}{32}\selectfont\raggedright
+  \setlist[itemize]{itemsep=0.55em, topsep=0.3em}}
+
+% key-finding cell on the dark band: big number + one-line meaning
+\newcommand{\keystat}[2]{%
+  {\fontsize{96}{100}\selectfont\bfseries\color{white}#1\par}\vspace{0.3em}
+  {\fontsize{30}{37}\selectfont\raggedright\color{sky}#2\par}}
+% heading inside an untitled block, styled like a tikzposter block title (\bf\LARGE)
+\newcommand{\panelhead}[1]{{\bfseries\LARGE\color{blocktitlefgcolor}#1\par}\vspace{12mm}}
+\newcommand{\keysep}{{\color{neutral}\vrule width 1.5pt}}
+
+% bracket + label on the right of a chart's rows (used to group elevated categories).
+% \groupbracket{x}{y top}{y bottom}{label}
+\newcommand{\groupbracket}[4]{%
+  \draw[slate, line width=4pt] (#1-1.5,#2) -- (#1,#2) -- (#1,#3) -- (#1-1.5,#3);
+  \node[anchor=west, align=left, text=slate, font=\bfseries] at (#1+1,{(#2+#3)/2}) {#4};}
+
+% Fig 2: ARA categories with the four elevated categories bracketed. #1 = row pitch (cm)
+\newcommand{\chartARAgroup}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=1cm]
+    \foreach \lab/\v/\c [count=\i from 0] in
+      {Low risk/36/risk1, Balanced risk/28/risk2, Increased risk/15/risk3,
+       Significant risk/16/risk4, High risk/3/risk5, Alzheimer's disease\textsuperscript{*}/2/risk6} {
+      \pgfmathsetmacro{\yy}{-\i*#1}
+      \fill[\c] (37,\yy) rectangle (37+\v*1.45,\yy+0.75*#1);
+      \node[anchor=east, text=ink] at (35.5,\yy+0.375*#1) {\lab};
+      \node[anchor=west, font=\bfseries, text=ink] at (37.8+\v*1.45,\yy+0.375*#1) {\v\%};
+    }
+    \draw[muted, line width=1.5pt] (37,0.9*#1) -- (37,-5.15*#1);
+    \groupbracket{72}{-2*#1+0.75*#1}{-5*#1}{\Large 36\%\\[-0.1em]\normalsize elevated}
+  \end{tikzpicture}}
+
+% Fig 4: Harrison BASIC with the two below-normal categories bracketed. #1 = row pitch (cm)
+\newcommand{\chartHarrisonGroup}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=1cm]
+    \foreach \lab/\v/\c [count=\i from 0] in
+      {Normal/59/risk1, Impaired/36/risk4, Poor/5/risk6} {
+      \pgfmathsetmacro{\yy}{-\i*#1}
+      \fill[\c] (22,\yy) rectangle (22+\v*1.0,\yy+0.75*#1);
+      \node[anchor=east, text=ink] at (20.5,\yy+0.375*#1) {\lab};
+      \node[anchor=west, font=\bfseries, text=ink] at (22.8+\v*1.0,\yy+0.375*#1) {\v\%};
+    }
+    \draw[muted, line width=1.5pt] (22,0.9*#1) -- (22,-2.15*#1);
+    \groupbracket{70}{-1*#1+0.75*#1}{-2*#1}{\Large 41\%\\[-0.1em]\normalsize below normal}
+  \end{tikzpicture}}
+
+% Fig 1: age distribution; 50-80 highlighted, ages >90 merged (0.2% + 0.1%)
+\newcommand{\chartAgeV}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=#1]
+    \foreach \lab/\v/\hi [count=\i from 0] in
+      {<20/1/0, 20--30/5/0, 30--40/7/0, 40--50/15/0, 50--60/24/1,
+       60--70/23/1, 70--80/20/1, 80--90/4.7/0, >90/0.3/0} {
+      \pgfmathsetmacro{\xc}{\i*11.1+5.5}
+      \ifnum\hi=1 \def\c{risk1}\def\tc{slate}\else\def\c{neutrallight}\def\tc{muted}\fi
+      \fill[\c] (\xc-4.3,0) rectangle (\xc+4.3,\v);
+      \node[above, font=\bfseries, text=\tc] at (\xc,\v) {\v\%};
+      \node[below, text=ink] at (\xc,-0.3) {\lab};
+    }
+    \draw[muted, line width=1.5pt] (0,0) -- (100,0);
+    \draw[risk1, line width=4pt] (45.2,28.2) -- (45.2,30) -- (77.9,30) -- (77.9,28.2);
+    \node[above, font=\Large\bfseries, text=slate] at (61.5,30.2) {67\% aged 50--80};
+    \node[anchor=west, font=\normalsize, text=muted] at (0,30.6) {\% of users};
+  \end{tikzpicture}}
+
+\begin{document}
+
+\maketitle
+
+% ================================================================ KEY FINDINGS (dark band)
+\useblockstyle{Dark}
+\block{}{\color{white}\raggedright
+  {\fontsize{40}{50}\selectfont\bfseries
+    A gamified brain-health app reaches the people dementia prevention needs to reach:\\
+    {\color{sky}two in three of 38,411 real-world users are aged 50--80.}\par}
+  \vspace{1.2em}
+  \begin{minipage}[t]{0.235\linewidth}\vspace{0pt}
+    \keystat{38,411}{users, 3 years of real-world app data (Czech \& English)}
+  \end{minipage}\hfill\keysep\hfill
+  \begin{minipage}[t]{0.215\linewidth}\vspace{0pt}
+    \keystat{67\%}{aged 50--80, the core target group for prevention}
+  \end{minipage}\hfill\keysep\hfill
+  \begin{minipage}[t]{0.235\linewidth}\vspace{0pt}
+    \keystat{36\%}{of 18,733 risk-assessed users in an increased-or-higher risk category}
+  \end{minipage}\hfill\keysep\hfill
+  \begin{minipage}[t]{0.215\linewidth}\vspace{0pt}
+    \keystat{41\%}{below-normal memory score on the Harrison BASIC test}
+  \end{minipage}
+}
+\useblockstyle{Clean}
+
+\begin{columns}
+
+% ================================================================ LEFT: why
+\column{0.55}
+
+\block{\sect{1.}{Background}}{\bodylarge
+  \begin{itemize}
+    \item Prevention is a major factor in reducing disease onset; modifying 14 risk factors could prevent or delay up to 45\% of dementia cases worldwide.\textsuperscript{1}
+    \item In addition to activation through specific cognitive exercises, physical activity (such as walking) is crucially important, as maintaining physical activity protects against dementia.
+    \item Prevention needs tools that reach people \textbf{before symptoms}, at population scale: risk screening, cognitive testing and lifestyle support.
+    \item Mobile apps can do this, but \textbf{keeping users engaged} long term is the main barrier in digital health.
+  \end{itemize}
+}
+
+\block{\sect{2.}{Objective}}{\bodylarge
+  \begin{itemize}
+    \item To evaluate user uptake and long-term engagement with the Terrapino mobile app.
+    \item To characterize the data streams generated by the platform.
+    \item To demonstrate how the app supports dementia risk screening, cognitive training, and healthy lifestyle habits.
+  \end{itemize}
+}
+
+% ================================================================ RIGHT: how
+\column{0.45}
+
+\block{\sect{3.}{Methods}}{\bodylarge
+  \begin{itemize}
+    \item \textbf{Design:} retrospective analysis of anonymized real-world data from \textbf{38,411} Czech- and English-speaking users over 3 years.
+    \item \textbf{What the app measures and trains:}
+    \begin{itemize}
+      \item \textbf{ARA score:} Alzheimer's Risk Assessment questionnaire on modifiable risk factors, physical activity and diet.
+      \item \textbf{Harrison BASIC:} repeatable episodic-memory test (Brief And Simple Index of Cognition, with Prof.\ John Harrison).
+      \item \textbf{Emotion recognition} task (social cognition).
+      \item \textbf{Daily training:} 7 cognitive mini-games and a step tracker for walking.
+    \end{itemize}
+    \item \textbf{Motivation:} points for activity, redeemable for partner offers.
+    \item \textbf{Outcomes:} uptake, engagement, risk categories, cognitive test results.
+  \end{itemize}
+}
+
+\end{columns}
+
+% ================================================================ RESULTS
+\block{\sect{4.}{Results}}{\body
+  \begin{minipage}[t]{0.51\linewidth}\raggedright\vspace{0pt}
+    \fig{1}{Two in three users are aged 50--80}
+    The app reaches the age group at increased risk of cognitive decline, not only younger, tech-savvy users.\par\vspace{0.4em}
+    {\large\chartAgeV{0.24cm}}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.45\linewidth}\raggedright\vspace{0pt}
+    \fig{2}{One in three risk-assessed users has elevated risk}
+    \textbf{48.8\%} of users (n = 18,733) completed the ARA questionnaire at least once.\par\vspace{0.6em}
+    {\large\chartARAgroup{1.2}}\par\vspace{0.3em}
+    {\small\color{muted}\textsuperscript{*}Name of the highest ARA questionnaire category; not a clinical diagnosis.\par}
+  \end{minipage}
+
+  \vspace{1.6em}
+  \begin{minipage}[t]{0.51\linewidth}\raggedright\vspace{0pt}
+    \fig{3}{Users and engagement}
+    \begin{tikzpicture}[x=\linewidth,y=1cm]
+      \fill[neutral] (0,0) rectangle (0.69,0.38);
+      \fill[neutrallight] (0.69,0) rectangle (1,0.38);
+    \end{tikzpicture}
+    \vspace{0.35em}
+    \noindent
+    \begin{minipage}[t]{0.48\linewidth}\raggedright
+      {\Large\bfseries\color{slate}69\%}\enspace women
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}\raggedleft
+      {\Large\bfseries\color{slate}31\%}\enspace men
+    \end{minipage}\par\vspace{1.2em}
+    \begin{minipage}[t]{0.48\linewidth}\vspace{0pt}\raggedright
+      \statcard{10:33 min}{\shortstack[l]{mean session length,\\highly active users}}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}\vspace{0pt}\raggedright
+      \statcard{1,038}{\shortstack[l]{daily active users of the\\7 games (last 6 months)}}
+    \end{minipage}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.45\linewidth}\raggedright\vspace{0pt}
+    \fig{4}{41\% scored below normal on a memory test}
+    Harrison BASIC, ${\approx}$4,500 users tested. A screening result in a self-selected sample, to be confirmed clinically.\par\vspace{0.6em}
+    {\large\chartHarrisonGroup{2.0}}
+  \end{minipage}
+}
+
+% ================================================================ CONCLUSION (full width)
+\useblockstyle{Highlight}
+\block{}{\bodylarge
+  \begin{minipage}[t]{0.38\linewidth}\vspace{0pt}\raggedright
+    \panelhead{\sect{5.}{Conclusion}}
+    \begin{itemize}
+      \item \textbf{Target population reach:} a gamified app reached 38,411 users, two thirds of them in the 50--80 age group that prevention targets.
+      \item \textbf{Risk is visible early:} one in three risk-assessed users had an increased-or-higher risk profile, and 41\% of tested users scored below normal on memory.
+      \item \textbf{Users engage:} highly active users spend over 10 minutes per session; points-based rewards are a practical engagement lever.
+    \end{itemize}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.34\linewidth}\vspace{0pt}\raggedright
+    \panelhead{Next steps}
+    \begin{itemize}
+      \item Longitudinal analysis of repeated Harrison BASIC scores and long-term retention.
+      \item Predictive models and personalized lifestyle recommendations.
+      \item Physician reports that bring app data into clinical care.
+      \item More language versions.
+    \end{itemize}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.22\linewidth}\vspace{0pt}\centering
+    \begin{minipage}[t]{0.47\linewidth}\vspace{0pt}\centering
+      \includegraphics[width=\linewidth]{qrs/app_download.pdf}\par\vspace{0.4em}
+      {\bfseries\color{slate}App download\par}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.47\linewidth}\vspace{0pt}\centering
+      \includegraphics[width=\linewidth]{qrs/link_to_pdf.pdf}\par\vspace{0.4em}
+      {\bfseries\color{slate}Access poster PDF\par}
+    \end{minipage}
+  \end{minipage}
+}
+\useblockstyle{Clean}
+
+\posterfooter
+
+\end{document}
