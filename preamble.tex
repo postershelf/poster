@@ -1,0 +1,284 @@
+% Shared preamble for poster_full.tex and poster_short.tex
+% (36th Alzheimer Europe Conference, POS11-03, A0 portrait).
+% Chart data: Grafy.xlsx (sheets "graf 1"-"graf 4"); edit the chart macros below if numbers change.
+
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage[none]{hyphenat}   % no hyphenation anywhere on the poster
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, arrows.meta}
+
+% ---------------------------------------------------------------- colours
+% Palette taken from terrapino.com and terrapino-logo.svg
+\definecolor{navy}{HTML}{00228A}     % brand: logo, wordmark, POS badge
+\definecolor{blue}{HTML}{428DFF}     % brand accent
+\definecolor{sky}{HTML}{A4C2F7}
+\definecolor{pale}{HTML}{F2F7FE}     % header / conclusion background (website hero)
+\definecolor{slate}{HTML}{1B2440}    % title, headings, dark key-finding band
+\definecolor{ink}{HTML}{22345C}      % body text
+\definecolor{muted}{HTML}{5E7DA6}    % secondary text
+\definecolor{neutral}{HTML}{3E5A86}  % charts: categorical / highlight, no risk meaning
+\definecolor{neutrallight}{HTML}{AFC0DA}
+\definecolor{greybar}{HTML}{D3DDEC}
+% Risk scale used in every chart: blue = fine, amber -> red = increasing concern
+\definecolor{risk1}{HTML}{428DFF}    % low risk / normal performance
+\definecolor{risk2}{HTML}{A4C2F7}    % balanced risk
+\definecolor{risk3}{HTML}{F7D08A}    % increased risk
+\definecolor{risk4}{HTML}{F29E38}    % significant risk / impaired performance
+\definecolor{risk5}{HTML}{E86A1E}    % high risk
+\definecolor{risk6}{HTML}{D9480F}    % Alzheimer's disease / poor performance
+
+\definecolorstyle{Terrapino}{
+  \colorlet{colorOne}{navy}\colorlet{colorTwo}{blue}\colorlet{colorThree}{pale}
+}{
+  \colorlet{backgroundcolor}{white}
+  \colorlet{framecolor}{white}
+  \colorlet{titlefgcolor}{slate}
+  \colorlet{titlebgcolor}{pale}
+  \colorlet{blocktitlebgcolor}{white}
+  \colorlet{blocktitlefgcolor}{slate}
+  \colorlet{blockbodybgcolor}{white}
+  \colorlet{blockbodyfgcolor}{ink}
+  \colorlet{innerblocktitlebgcolor}{pale}
+  \colorlet{innerblocktitlefgcolor}{slate}
+  \colorlet{innerblockbodybgcolor}{pale}
+  \colorlet{innerblockbodyfgcolor}{ink}
+  \colorlet{notefgcolor}{ink}\colorlet{notebgcolor}{pale}\colorlet{noteframecolor}{pale}
+}
+\usecolorstyle{Terrapino}
+\usebackgroundstyle{Empty}
+
+% Header: white brand bar on top (like terrapino.com), pale band below, soft wave at the bottom.
+% The bar height must match the first row of \TP@maketitle (innersep + logo height + gap).
+\newlength{\brandbar}\setlength{\brandbar}{66mm}
+\definetitlestyle{Band}{
+  width=841mm, roundedcorners=0, linewidth=0pt, innersep=15mm,
+  titletotopverticalspace=0mm, titletoblockverticalspace=10mm,
+  titlegraphictotitledistance=0pt
+}{
+  \fill[titlebgcolor] (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop);
+  \fill[white] (\titleposleft,\titlepostop) rectangle (\titleposright,\titlepostop-\brandbar);
+  \fill[sky] (\titleposleft,\titlepostop-\brandbar) rectangle (\titleposright,\titlepostop-\brandbar-1.5mm);
+  \fill[white] (\titleposleft,\titleposbottom-1mm)
+    .. controls ($(\titleposleft,\titleposbottom)+(300mm,28mm)$) and ($(\titleposright,\titleposbottom)+(-250mm,-10mm)$)
+    .. (\titleposright,\titleposbottom+22mm) -- (\titleposright,\titleposbottom-1mm) -- cycle;
+  \headerphones
+}
+\usetitlestyle{Band}
+
+% Blocks: plain; a hairline rule above each section title acts as divider
+\defineblockstyle{Clean}{
+  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=0, linewidth=0pt,
+  titleinnersep=8mm, bodyinnersep=9mm
+}{
+  \ifBlockHasTitle
+    \fill[sky] ($(blocktitle.north west)+(10mm,0)$) rectangle ($(blocktitle.north east)+(-10mm,-1.2mm)$);
+  \fi
+}
+% Key finding: dark slate band (the poster's single strong visual anchor)
+\defineblockstyle{Dark}{
+  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=0, linewidth=0pt,
+  titleinnersep=10mm, bodyinnersep=11mm
+}{
+  \fill[slate] (blockbody.south west) rectangle (blockbody.north east);
+}
+% Results panel: dark background continues behind the title and chart area.
+\defineblockstyle{ResultsDark}{
+  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=0, linewidth=0pt,
+  titleinnersep=8mm, bodyinnersep=9mm
+}{
+  \fill[slate] (blockbody.south west) rectangle (blocktitle.north east);
+}
+% Conclusion panel: pale fill with a navy bar on the left
+\defineblockstyle{Highlight}{
+  titlewidthscale=1, bodywidthscale=1, titleleft,
+  titleoffsetx=0pt, titleoffsety=0pt, bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=0, linewidth=0pt,
+  titleinnersep=10mm, bodyinnersep=12mm
+}{
+  \fill[pale] (blockbody.south west) rectangle (blocktitle.north east);
+  \fill[navy] (blockbody.south west) rectangle ($(blocktitle.north west)+(5mm,0)$);
+}
+\useblockstyle{Clean}
+
+% ---------------------------------------------------------------- helpers
+\setlist[itemize]{leftmargin=1.1em, itemsep=0.4em, topsep=0.2em, parsep=0pt,
+  label={\color{blue}\textbullet}}
+\newcommand{\body}{\normalsize\raggedright}
+\newcommand{\sect}[2]{{\color{blue}\scalebox{0.9}{#1}}\enspace#2}
+\newcommand{\fig}[2]{\par{\bfseries\color{muted}Fig #1.}\enspace{\bfseries\color{slate}#2}\par\vspace{0.5em}}
+\newcommand{\figdark}[2]{\par{\bfseries\color{sky}Fig #1.}\enspace{\bfseries\color{white}#2}\par\vspace{0.5em}}
+% width unit for charts: 1 unit = 1% of the current line width
+\newcommand{\chartunits}{\pgfmathsetmacro{\U}{\linewidth/100}}
+\newcommand{\swatch}[1]{{\color{#1}\rule[-0.1em]{0.9em}{0.9em}}}
+% big number + caption
+\newcommand{\stat}[2]{{\fontsize{64}{70}\selectfont\bfseries\color{slate}#1\par}\vspace{0.15em}{\color{muted}#2\par}}
+
+% App screenshot with rounded corners, hairline frame and soft shadow.
+% \phone[trim l b r t in px]{height}{file}
+\newsavebox{\phonebox}
+\newcommand{\phone}[3][0 0 0 0]{%
+  \sbox{\phonebox}{\includegraphics[height=#2, trim=#1, clip]{#3}}%
+  \begin{tikzpicture}[baseline=(current bounding box.south)]
+    \fill[slate, opacity=0.14, rounded corners=7mm] (2.5mm,-3.5mm) rectangle ++(\the\wd\phonebox,\the\ht\phonebox);
+    \begin{scope}
+      \clip[rounded corners=7mm] (0,0) rectangle (\the\wd\phonebox,\the\ht\phonebox);
+      \node[anchor=south west, inner sep=0] at (0,0) {\usebox{\phonebox}};
+    \end{scope}
+    \draw[greybar, line width=1.2mm, rounded corners=7mm] (0,0) rectangle (\the\wd\phonebox,\the\ht\phonebox);
+  \end{tikzpicture}}
+% Same frame, drawn inside an existing tikzpicture at (x,y) = bottom-left corner.
+% \drawphone{x}{y}{height}{file}{trim}
+\newcommand{\drawphone}[5]{%
+  \sbox{\phonebox}{\includegraphics[height=#3, trim=#5, clip]{#4}}%
+  \fill[slate, opacity=0.14, rounded corners=7mm] ($(#1,#2)+(2.5mm,-3.5mm)$) rectangle ++(\the\wd\phonebox,\the\ht\phonebox);
+  \begin{scope}
+    \clip[rounded corners=7mm] (#1,#2) rectangle ++(\the\wd\phonebox,\the\ht\phonebox);
+    \node[anchor=south west, inner sep=0] at (#1,#2) {\usebox{\phonebox}};
+  \end{scope}
+  \draw[greybar, line width=1.2mm, rounded corners=7mm] (#1,#2) rectangle ++(\the\wd\phonebox,\the\ht\phonebox);}
+% the screenshots used on the posters (crops remove empty space / unfinished widgets)
+\newcommand{\shotHome}[1]{\phone[0 338 0 0]{#1}{screenshot/1000032275.jpg}}   % home: ARA score, tests, brain training
+\newcommand{\shotTests}[1]{\phone[0 640 0 0]{#1}{screenshot/1000032281.jpg}}  % questionnaires and tests
+\newcommand{\shotGames}[1]{\phone{#1}{screenshot/1000032269.jpg}}             % brain-training games with coin rewards
+\newcommand{\shotPyramid}[1]{\phone{#1}{screenshot/1000032284.jpg}}           % Pyramid game
+
+% stat card: big number + caption on a pale rounded panel
+\newcommand{\statcard}[2]{%
+  \begin{tikzpicture}
+    \node[fill=pale, rounded corners=4mm, inner sep=6mm, text width=\linewidth-12mm, align=left, text=ink]
+      {{\fontsize{58}{62}\selectfont\bfseries\color{blue}#1\par}\vspace{0.2em}{\normalsize #2\par}};
+  \end{tikzpicture}}
+
+% ---------------------------------------------------------------- charts (data from Grafy.xlsx)
+% Fig 1 (graf 1): gender donut, categorical -> neutral colours. #1 = radius
+\newcommand{\chartGender}[1]{%
+  \begin{tikzpicture}
+    \draw[risk1,      line width=0.45*#1] (90:#1) arc[start angle=90, delta angle=-248.4, radius=#1];
+    \draw[risk4, line width=0.45*#1] (90-248.4-2:#1) arc[start angle=90-248.4-2, delta angle=-107.6, radius=#1];
+    \node[anchor=west, align=left, text=ink] at (1.45*#1,0.42*#1)
+      {\swatch{risk1}\enspace Females\\[0.25em]{\Large\bfseries\color{slate}69\%}};
+    \node[anchor=west, align=left, text=ink] at (1.45*#1,-0.52*#1)
+      {\swatch{risk4}\enspace Males\\[0.25em]{\Large\bfseries\color{slate}31\%}};
+  \end{tikzpicture}}
+% Fig 2 (graf 2): ARA risk categories. Bars start at x=37 (units of 1% line width). #1 = row pitch (cm)
+\newcommand{\chartARA}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=1cm]
+    \foreach \lab/\v/\c [count=\i from 0] in
+      {Low risk/36/risk1, Balanced risk/28/risk2, Increased risk/15/risk3,
+       Significant risk/16/risk4, High risk/3/risk5, Alzheimer's Disease/2/risk6} {
+      \pgfmathsetmacro{\yy}{-\i*#1}
+      \fill[\c] (37,\yy) rectangle (37+\v*1.45,\yy+0.75*#1);
+      \node[anchor=east, text=ink] at (35.5,\yy+0.375*#1) {\lab};
+      \node[anchor=west, font=\bfseries, text=ink] at (37.8+\v*1.45,\yy+0.375*#1) {\v\%};
+    }
+    \draw[muted, line width=1.5pt] (37,0.9*#1) -- (37,-5.15*#1);
+  \end{tikzpicture}}
+% Fig 3 (graf 3): age distribution, 50-80 highlighted. #1 = cm per percentage point
+\newcommand{\chartAge}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=#1]
+    \foreach \lab/\v/\hi [count=\i from 0] in
+      {<20/1/0, 20--30/5/0, 30--40/7/0, 40--50/15/0, 50--60/24/1,
+       60--70/23/1, 70--80/20/1, 80--90/4.7/0, 90--100/0.2/0, >100/0.1/0} {
+      \pgfmathsetmacro{\xc}{\i*10+5}
+      \ifnum\hi=1 \def\c{risk1}\def\tc{slate}\else\def\c{risk3}\def\tc{muted}\fi
+      \fill[\c] (\xc-3.8,0) rectangle (\xc+3.8,\v);
+      \node[above, font=\bfseries, text=\tc] at (\xc,\v) {\v\%};
+      \node[below, text=ink] at (\xc,-0.3) {\lab};
+    }
+    \draw[muted, line width=1.5pt] (0,0) -- (100,0);
+    \draw[risk1, line width=4pt] (41.2,28.2) -- (41.2,30) -- (68.8,30) -- (68.8,28.2);
+    \node[above, font=\Large\bfseries, text=slate] at (60,30.2) {67\% aged 50--80};
+    \node[anchor=west, font=\normalsize, text=muted] at (0,30.6) {\% of users};
+  \end{tikzpicture}}
+% Fig 2 (graf 4): Harrison BASIC performance as horizontal bars. #1 = row pitch (cm)
+\newcommand{\chartHarrison}[1]{%
+  \chartunits
+  \begin{tikzpicture}[x=\U pt, y=1cm]
+    \foreach \lab/\v/\c [count=\i from 0] in
+      {Normal performance/59/risk1, Impaired performance/36/risk4, Poor performance/5/risk6} {
+      \pgfmathsetmacro{\yy}{-\i*#1}
+      \fill[\c] (30,\yy) rectangle (30+\v*1.0,\yy+0.75*#1);
+      \node[anchor=east, text=ink] at (28.5,\yy+0.375*#1) {\lab};
+      \node[anchor=west, font=\bfseries, text=ink] at (30.8+\v*1.0,\yy+0.375*#1) {\v\%};
+    }
+    \draw[muted, line width=1.5pt] (30,0.9*#1) -- (30,-2.15*#1);
+  \end{tikzpicture}}
+% Fig 4 (graf 4): Harrison BASIC waffle, 100 squares = 100 % of subjects. #1 = cell pitch
+\newcommand{\chartWaffle}[1]{%
+  \begin{tikzpicture}
+    \foreach \k in {0,...,99} {
+      \pgfmathtruncatemacro{\col}{floor(\k/10)}
+      \pgfmathtruncatemacro{\row}{mod(\k,10)}
+      \ifnum\k<59 \def\c{risk1}\else\ifnum\k<95 \def\c{risk4}\else\def\c{risk6}\fi\fi
+      \fill[\c] (\col*#1, -\row*#1) rectangle ++(0.82*#1,-0.82*#1);
+    }
+  \end{tikzpicture}}
+\newcommand{\waffleLegend}{%
+  {\Large\renewcommand{\arraystretch}{1.25}%
+  \begin{tabular}{@{}l@{\hspace{1.5em}}r@{}}
+    \swatch{risk1}\enspace Normal performance   & \textbf{59\%}\\
+    \swatch{risk4}\enspace Impaired performance & \textbf{36\%}\\
+    \swatch{risk6}\enspace Poor performance     & \textbf{5\%}
+  \end{tabular}\par}
+  \vspace{0.6em}
+  {\normalsize\color{sky}One square = 1\% of subjects\par}}
+
+% ---------------------------------------------------------------- header
+% Set \headerphones (tikz drawing commands, e.g. \drawphone) to show screenshots next to the title;
+% narrow the title with \headtextfrac so they do not overlap.
+\newcommand{\headerphones}{}
+\newcommand{\headtextfrac}{1}
+\newcommand{\titletopgap}{18mm}
+\newcommand{\authorbreak}{ }
+\makeatletter
+\renewcommand{\TP@maketitle}{%
+  \raggedright
+  % brand bar row (logo 36 mm + 15 mm innersep above + 15 mm below = \brandbar)
+  \includegraphics[height=36mm]{logos/terrapino-logo.pdf}\hspace{8mm}%
+  \raisebox{10mm}{\fontsize{68}{68}\selectfont\color{navy}Terrapino}\hfill
+  \raisebox{12mm}{\fontsize{40}{40}\selectfont\bfseries
+    \colorbox{navy}{\color{white}\strut\,POS11-03\,}\hspace{0.5em}%
+    {\color{muted}36th Alzheimer Europe Conference \textbullet{} Dublin \textbullet{} October 28, 2026}}\par
+  \vspace{\titletopgap}
+  \begin{minipage}[b]{\headtextfrac\linewidth}\raggedright
+    {\fontsize{98}{114}\selectfont\bfseries\color{slate}
+      Digital Cognitive Training and\\
+      Dementia Risk Monitoring: Real-World\\
+      Evidence from the Terrapino Mobile App\par}
+    \vspace{11mm}
+    {\fontsize{54}{64}\selectfont\bfseries\color{ink}
+      Jan Pavlik\textsuperscript{4}, Katerina Sheardova\textsuperscript{3a,3b},
+      Martin Valis\textsuperscript{5}, Jiri Cerman\textsuperscript{2},\authorbreak
+      Ross Andel\textsuperscript{1}, Jakub Hort\textsuperscript{2}\par}
+  \end{minipage}\par
+  \vspace{8mm}
+  {\fontsize{28}{36}\selectfont\color{muted}
+    \textsuperscript{1}Edson College of Nursing and Health Innovation, Arizona State University, Phoenix, AZ, United States. \enspace
+    \textsuperscript{2}Department of Neurology, Second Faculty of Medicine, Charles University, Motol and Homolka University Hospital, Prague, Czechia. \enspace
+    \textsuperscript{3a}International Clinical Research Center, St.\ Anne's University Hospital, Brno, Czechia. \enspace
+    \textsuperscript{3b}Neuro Health Centrum, Brno, Czechia. \enspace
+    \textsuperscript{4}AlzheimerChain Foundation, Prague, Czechia. \enspace
+    \textsuperscript{5}Research Institute for Biomedical Science, Hradec Kralove, Czechia.\par}
+  \vspace{10mm}}
+\makeatother
+
+\newcommand{\posterfooter}{%
+  \block{}{
+    \small\color{muted}
+    \textbf{Medical device:} Terrapino (software), Risk class I, according to the Annex VIII, Rule 11 Regulation (EU) 2017/745 of the European Parliament and of the Council on medical devices.\par
+    \textbf{Reference:} 1. Livingston G, Huntley J, Liu K et al. Dementia prevention, intervention, and care: 2024 report of the Lancet standing Commission. The Lancet, 2024; 404, 572--628.
+  }}
+
+\tikzposterlatexaffectionproofoff
