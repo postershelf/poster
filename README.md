@@ -1,5 +1,6 @@
 # Terrapino poster
 
-Download the poster: [terrapino-poster.pdf](https://viktorkorladinov.github.io/terrapino-poster/terrapino-poster.pdf)
+LaTeX source of the Terrapino poster (36th Alzheimer Europe Conference, Dublin 2026). The poster PDF is hosted from this repo via GitHub Pages.
 
-Source: `terrapino-poster.tex` + `preamble.tex`. Build with `pdflatex terrapino-poster.tex`.
+- PDF: [terrapino-poster.pdf](terrapino-poster.pdf)
+- Build: `pdflatex terrapino-poster.tex`
